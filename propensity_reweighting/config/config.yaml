@@ -1,0 +1,7 @@
+PropensityReweighter:
+    logging: True
+        
+ProScoreVectorizer:
+    model: "google-bert/bert-base-uncased"
+    tokenizer: "google-bert/bert-base-uncased"
+    

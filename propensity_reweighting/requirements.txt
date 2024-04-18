@@ -1,0 +1,6 @@
+numpy==1.24.4
+pandas==2.0.3
+seaborn==0.13.2
+transformers==4.6.1
+scikit-learn==1.3.2
+hep-ml==0.7.2
