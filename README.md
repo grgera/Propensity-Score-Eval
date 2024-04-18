@@ -3,4 +3,4 @@ Propensity Score Reweighting to estimate Out Of Distribution Generalization
 
 
 Last update: 
-+ Implemented draft `propensity_reweighting` package and check QA data -> [Notebook]([https://arxiv.org/pdf/1908.10084.pdf](https://github.com/grgera/Propensity-Score-Eval/blob/main/toy_example_3.0.ipynb))
++ Implemented draft `propensity_reweighting` package and check QA data -> [Notebook](https://github.com/grgera/Propensity-Score-Eval/blob/main/toy_example_3.0.ipynb)
