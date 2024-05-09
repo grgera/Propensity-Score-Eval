@@ -1,12 +1,15 @@
 from .preprocessing import ProScoreVectorizer
 from hep_ml.metrics_utils import ks_2samp_weighted
 from concurrent.futures import ThreadPoolExecutor
-from tqdm.auto import tqdm
+from scipy.stats import wasserstein_distance
+from scipy.stats import energy_distance
 from hep_ml import reweight
+from tqdm.auto import tqdm
 import itertools
 import numpy as np
 import sys
 import os
+
 
 class PropensityReweighter:
     def __init__(self, config):
@@ -28,6 +31,8 @@ class PropensityReweighter:
         """
         """
         k2 = []
+        emd = []
+        ed = []
         for i in range(self.preprocess.model.config.hidden_size):
             k2.append(ks_2samp_weighted(orig[:, i], 
                                                 targ[:, i], 
@@ -35,8 +40,25 @@ class PropensityReweighter:
                                                 weights2=np.ones(len(targ), dtype=float)
                                                )
                              )
+        if type_data != 'weighted':
+            for i in range(self.preprocess.model.config.hidden_size):
+                emd.append(wasserstein_distance(orig[:, i], targ[:, i]))
+                
+            for i in range(self.preprocess.model.config.hidden_size):
+                ed.append(energy_distance(orig[:, i], targ[:, i]))
+        else:
+            for i in range(self.preprocess.model.config.hidden_size):
+                emd.append(wasserstein_distance(orig[:, i], targ[:, i], u_weights=weights_pred))
+            for i in range(self.preprocess.model.config.hidden_size):
+                ed.append(energy_distance(orig[:, i], targ[:, i], u_weights=weights_pred))
+        
         if printing:
-            print(f"Mean and median k2 on {type_data} test data:", np.mean(k2), "-", np.median(k2))
+            # print(f"Mean and median k2 on {type_data} test data:", np.mean(k2), "-", np.median(k2))
+            print(f"Mean k2 on {type_data} test data:", round(np.mean(k2), 4))
+            print(f"Mean EMD on {type_data} test data:", round(np.mean(emd), 4))
+            print(f"Mean ED on {type_data} test data:", round(np.mean(ed), 4))
+            print()
+            
             
         return np.mean(k2)
     
