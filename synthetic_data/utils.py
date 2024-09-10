@@ -3,6 +3,8 @@ import logging
 import random
 
 import numpy as np
+import torch
+from geomloss import SamplesLoss
 
 
 def setup_logging(output_dir, log_file):
@@ -28,6 +30,28 @@ def setup_logging(output_dir, log_file):
 
     return logger
 
+
 def set_seeds(seed):
     random.seed(seed)
     np.random.seed(seed)
+
+
+def compute_geom_loss(x, y, x_weights=None, y_weights=None):
+    sinkhorn = SamplesLoss(loss="sinkhorn", p=2, blur=.05)
+
+    x = torch.tensor(x, dtype=torch.float32)
+    y = torch.tensor(y, dtype=torch.float32)
+
+    if x_weights is None and y_weights is None:
+        return sinkhorn(x, y)
+
+    if x_weights is None:
+        x_weights = sinkhorn.generate_weights(x)
+        y_weights = torch.tensor(y_weights, dtype=torch.float32)
+    if y_weights is None:
+        y_weights = sinkhorn.generate_weights(y)
+        x_weights = torch.tensor(x_weights, dtype=torch.float32)
+
+    x_weights = x_weights / x_weights.sum()
+    y_weights = y_weights / y_weights.sum()
+    return sinkhorn(x_weights, x, y_weights, y)
