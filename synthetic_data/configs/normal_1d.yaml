@@ -1,0 +1,22 @@
+experiment:
+  seed: 1234
+  n_setups: 1
+  n_samples: 500
+  reweighers:
+#    - importance
+    - classifier
+#    - kde
+#    - density-ratio
+#    - adversarial
+  performance_models:
+#    - gaussian_1d
+#    - quadratic_1d
+#    - exp_decay_1d
+    - sigmoid_1d
+
+dataset:
+  input_data_distribution: gaussian
+  mean_range: [0, 1]
+  loc_range: [0.1, 2]
+  model_performance: "" # to be filled recursively by the ones listed in experiment.performance_models
+  max_setup_plots: 1

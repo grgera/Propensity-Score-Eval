@@ -1,0 +1,28 @@
+experiment:
+  seed: 1234
+  n_setups: 5
+  n_samples: 300
+  reweighers:
+#    - dummy
+#    - importance
+    - classifier
+#    - kde
+#    - density-ratio
+    - calib-classifier
+    - adversarial
+    - folding-reweighter
+
+  performance_models:
+    - quadratic_nd
+#    - gaussian_nd
+    - exp_decay_nd
+    - sigmoid_nd
+
+dataset:
+  input_data_distribution: studentt_nd
+  mean_range: [0, 1]
+  cov_range: [0.1, 1]
+  df_range: [1, 10]
+  n_dim: 10
+  model_performance: "" # to be filled recursively by the ones listed in experiment.performance_models
+  max_setup_plots: 1

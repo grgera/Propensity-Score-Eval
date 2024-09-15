@@ -1,0 +1,22 @@
+experiment:
+  seed: 1234
+  n_setups: 10
+  n_samples: 200
+  reweighers:
+    - importance
+    - classifier
+    - kde
+    - density-ratio
+    - adversarial
+  performance_models:
+    - gaussian_1d
+    - quadratic_1d
+    - exp_decay_1d
+    - sigmoid_1d
+
+dataset:
+  input_data_distribution: weibull
+  shape_range: [0.1, 4]
+  scale_range: [0.1, 4]
+  model_performance: "" # to be filled recursively by the ones listed in experiment.performance_models
+  max_setup_plots: 1
