@@ -3,4 +3,4 @@ Propensity Score Reweighting to estimate Out Of Distribution Generalization
 
 
 Last update: 
-+ Сonducted an experiment with QA updated data with `propensity_reweighting` package and experiment with WMT23 part -> [Notebook](https://github.com/grgera/Propensity-Score-Eval/blob/main/notebooks/package.ipynb) 
++ Added several methods for generating synthetic *original* and *target* distributions, along with various ways to produce scores -> [Repo](https://github.com/grgera/Propensity-Score-Eval/tree/main/synthetic_data) 
