@@ -12,9 +12,16 @@ import torch.nn as nn
 import torch.optim as optim
 from hep_ml import reweight
 from ..propensity_reweighting.src.reweight import PropensityReweighter
+from ..propensity_reweighting.src.preprocessing import ProScoreVectorizer
 
 
 class Reweigher(ABC):
+    def __init__(self):
+        """
+        """
+        ## TODO: redefine without hot value
+        self.vectorizer = ProScoreVectorizer("google-bert/bert-base-uncased")
+
     @abstractmethod
     def learn_weights(self, data_a, data_b):
         """
@@ -360,18 +367,16 @@ class ModifiedHepReweighter(Reweigher):
         self.best_predictor = None
 
     def learn_weights(self, data_a, data_b):
-        self.best_predictor = self.pr.fit_gridsearch(data_a, data_b, self.grid_values)
+        self.best_predictor = self.pr.fit_gridsearch(data_a, data_b, self.grid_values, vectorized=True)
         self.trained = True
 
     def reweigh(self, data_a):
         if not self.trained:
             raise RuntimeError("Weights have not been learned. Call 'learn_weights' first.")
 
-        weights = self.best_predictor.predict(data_a)
+        weights = self.best_predictor.predict(data_a, vetorized=True)
 
         return weights
-
-
 
 
 AVAILABLE_REWEIGHERS = {
@@ -383,5 +388,5 @@ AVAILABLE_REWEIGHERS = {
     'density-ratio': DensityRatioReweigher(),
     'adversarial': AdversarialReweigher(),
     'folding-reweighter': FoldingReweighter(),
-    'modifiedhep-reweighter': ModifiedHepReweighter()
+    'modifiedhep-reweighter': ModifiedHepReweighter
 }

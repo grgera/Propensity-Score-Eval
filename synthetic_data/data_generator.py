@@ -617,3 +617,5 @@ class MultivariateStudentTInputGenerator(MultivariateDataGenerator):
             self.plot_distributions(data_a, data_b, model_performance, setup, output_dir)
 
         return setup
+
+class 

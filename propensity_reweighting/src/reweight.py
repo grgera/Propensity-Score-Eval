@@ -99,10 +99,13 @@ class PropensityReweighter:
 
         return self
         
-    def predict(self, test):
+    def predict(self, test, vectorized=False):
         """
         """
-        vctr_test = self.preprocess.vectorize_texts(test)
+        if not vectorized:
+            vctr_test = self.preprocess.vectorize_texts(test)
+        else:
+            vctr_test = test
         return self.reweighter.predict_weights(vctr_test)
     
     def process_param_set(self, args):
@@ -126,13 +129,17 @@ class PropensityReweighter:
 
         return params, error
     
-    def fit_gridsearch(self, original, target, grid_params, parallel=-1):
+    def fit_gridsearch(self, original, target, grid_params, vectorized=False, parallel=-1):
         max_score = -sys.maxsize
         best_params = {}
         results = []
 
-        vctr_original = self.preprocess.vectorize_texts(original)
-        vctr_target = self.preprocess.vectorize_texts(target)
+        if not vectorized:
+            vctr_original = self.preprocess.vectorize_texts(original)
+            vctr_target = self.preprocess.vectorize_texts(target)
+        else:
+            vctr_original = original
+            vctr_target = target
 
         if parallel == -1:
             parallel_units = os.cpu_count()
