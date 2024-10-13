@@ -11,6 +11,20 @@ experiment:
     - calib-classifier
     - adversarial
     - folding-reweighter
+    - modifiedhep-reweighter
+  reweighers_configs:
+    modifiedhep-reweighter:
+      PropensityReweighter:
+        logging: False
+        GBparams:
+          n_estimators: 30
+          learning_rate: 0.009
+          max_depth: 20
+          min_samples_leaf: 1
+          n_folds: 3
+      ProScoreVectorizer:
+        model: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+        tokenizer: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
   performance_models:
     - quadratic_nd

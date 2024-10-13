@@ -1,1 +1,44 @@
 experiment:
+  seed: 1234
+  reweighers:
+ #   - importance
+    - classifier
+ #   - kde
+    - calib-classifier
+    - adversarial
+    - folding-reweighter
+    - modifiedhep-reweighter
+  reweighers_configs:
+      modifiedhep-reweighter:
+        PropensityReweighter:
+          logging: True
+          GBparams:
+            n_estimators: 30
+            learning_rate: 0.009
+            max_depth: 20
+            min_samples_leaf: 1
+            n_folds: 3
+        ProScoreVectorizer:
+          model: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          tokenizer: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+  performance_models:
+    - claude-3.5_F1
+    - claude-3.5_PEDANT
+    - gpt-4o_F1
+    - gpt-4o_PEDANT
+
+dataset:
+  path_to_data: ./real_data_folder/qa/llm_qa_mertic_results_wz.pkl
+  input_data_distribution: qa
+  shifts:
+    - location
+    - numerical
+    - organization
+    - person
+    - time
+  text_from: Question
+  vectorizer: 
+    model: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    tokenizer: "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+  model_performance: "" # to be filled recursively by the ones listed in experiment.performance_models
+  max_setup_plots: 1

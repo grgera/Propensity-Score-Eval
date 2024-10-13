@@ -10,7 +10,7 @@ from scipy import stats
 from scipy.stats import wasserstein_distance, wasserstein_distance_nd
 from sklearn.metrics import mean_squared_error
 
-from .data_generator import WmtInputGenerator
+from .data_generator import WmtInputGenerator, ParserInputGenerator, QaInputGenerator
 from .reweighers import AVAILABLE_REWEIGHERS
 from .utils import set_seeds, setup_logging, compute_geom_loss
 from tqdm import tqdm
@@ -137,10 +137,10 @@ def experiment_pipeline(config, logger):
         # N dimensional input distributions
         if input_data_distribution == 'wmt':
             data_generator = WmtInputGenerator(dataset_config)
-        # elif input_data_distribution == 'qa':
-        #     data_generator = QaInputGenerator(dataset_config)
-        # elif input_data_distribution == 'parser':
-        #     data_generator = ParserInputGenerator(dataset_config)
+        elif input_data_distribution == 'parsers':
+            data_generator = ParserInputGenerator(dataset_config)
+        elif input_data_distribution == 'qa':
+            data_generator = QaInputGenerator(dataset_config)
         else:
             raise Exception(f"Input data distribution not supported: {input_data_distribution}")
         
@@ -164,7 +164,7 @@ def experiment_pipeline(config, logger):
             reweigher = AVAILABLE_REWEIGHERS[reweigher_name]
 
             if isinstance(reweigher, type):  # Check if it's a class, i.e., needs initialization
-                rew_config = config["reweighers_configs"]["reweigher_name"]
+                rew_config = config['experiment']["reweighers_configs"][reweigher_name]
                 reweigher = reweigher(rew_config)
 
             logger.info(

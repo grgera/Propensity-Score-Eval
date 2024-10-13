@@ -9,7 +9,7 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
 
-from utils import compute_geom_loss
+from .utils import compute_geom_loss
 
 
 def quadratic_1d(x, max_perf):
@@ -617,5 +617,3 @@ class MultivariateStudentTInputGenerator(MultivariateDataGenerator):
             self.plot_distributions(data_a, data_b, model_performance, setup, output_dir)
 
         return setup
-
-class 

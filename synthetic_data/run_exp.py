@@ -11,11 +11,11 @@ from scipy.stats import wasserstein_distance, wasserstein_distance_nd
 from sklearn.metrics import mean_squared_error
 from geomloss import SamplesLoss
 
-from data_generator import DataGenerator, GaussianInputGenerator, ExponentialInputGenerator, StudentTInputGenerator, \
+from .data_generator import DataGenerator, GaussianInputGenerator, ExponentialInputGenerator, StudentTInputGenerator, \
     WeibullInputGenerator, AVAILABLE_PERF_MODELS, MultivariateGaussianInputGenerator, MultivariateBetaInputGenerator, \
     MultivariateStudentTInputGenerator
-from reweighers import AVAILABLE_REWEIGHERS
-from utils import set_seeds, setup_logging, compute_geom_loss
+from .reweighers import AVAILABLE_REWEIGHERS
+from .utils import set_seeds, setup_logging, compute_geom_loss
 from tqdm import tqdm
 
 
@@ -168,6 +168,10 @@ def experiment_pipeline(config, logger):
         for reweigher_name in reweighers:
             reweigher = AVAILABLE_REWEIGHERS[reweigher_name]
 
+            if isinstance(reweigher, type):  # Check if it's a class, i.e., needs initialization
+                rew_config = config['experiment']["reweighers_configs"][reweigher_name]
+                reweigher = reweigher(rew_config)
+
             logger.info(
                 f"Executing reweighing experiment for {model_performance_name} - {reweigher_name} on input {input_data_distribution}")
             # Execute the experiment and get the result DataFrame
@@ -205,11 +209,11 @@ if __name__ == "__main__":
     if not config_file.endswith(".yaml"):
         config_file += ".yaml"
 
-    config_folder = "configs"
-    config_path = os.path.join(config_folder, config_file)
+    # config_folder = "configs"
+    # config_path = os.path.join(config_folder, config_file)
 
     # Load configuration with OmegaConf
-    config = OmegaConf.load(config_path)
+    config = OmegaConf.load(config_file)
 
     # Add a timestamp to the output_dir
     timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")

@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from hep_ml import reweight
-from ..propensity_reweighting.src.reweight import PropensityReweighter
+from propensity_reweighting.src.reweight import PropensityReweighter
 
 
 class Reweigher(ABC):
@@ -383,5 +383,5 @@ AVAILABLE_REWEIGHERS = {
     'density-ratio': DensityRatioReweigher(),
     'adversarial': AdversarialReweigher(),
     'folding-reweighter': FoldingReweighter(),
-    'modifiedhep-reweighter': ModifiedHepReweighter()
+    'modifiedhep-reweighter': ModifiedHepReweighter
 }

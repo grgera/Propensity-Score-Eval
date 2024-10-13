@@ -360,10 +360,15 @@ class ModifiedHepReweighter(Reweigher):
     def __init__(self, config):
         self.config = config
         self.pr = PropensityReweighter(config)
-        self.grid_values = {'n_estimators': [30, 100], 
-                   'learning_rate':[0.01, 0.001, 0.009],
-                   'max_depth': [5, 10],
-                   'min_samples_leaf': [1, 10, 100]}
+        # self.grid_values = {'n_estimators': [30, 100], 
+        #            'learning_rate':[0.01, 0.001, 0.009],
+        #            'max_depth': [5, 10],
+        #            'min_samples_leaf': [1, 10, 100]}
+        
+        self.grid_values = {'n_estimators': [5, 30, 100], 
+                   'learning_rate':[0.1, 0.01, 0.001, 0.009],
+                   'max_depth': [2, 5, 10],
+                   'min_samples_leaf': [1, 10, 50, 100]}
         
         self.best_predictor = None
 
@@ -375,7 +380,7 @@ class ModifiedHepReweighter(Reweigher):
         if not self.trained:
             raise RuntimeError("Weights have not been learned. Call 'learn_weights' first.")
 
-        weights = self.best_predictor.predict(data_a, vetorized=True)
+        weights = self.best_predictor.predict(data_a, vectorized=True)
 
         return weights
 

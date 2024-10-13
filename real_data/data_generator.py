@@ -9,31 +9,16 @@ import seaborn as sns
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.metrics import mean_squared_error
-from ..propensity_reweighting.src.preprocessing import ProScoreVectorizer
+from propensity_reweighting.src.preprocessing import ProScoreVectorizer
 
-from utils import compute_geom_loss
+from .utils import compute_geom_loss
 
-
-def exp_decay_nd(x, max_perf, decay_rate=1):
-    """
-    Exponential decay performance function for n-dimensional input.
-    f(x) = exp(-decay_rate * ||x - max_perf||)
-    """
-    # Calculate Euclidean distance from max_perf for each point in x
-    distance = np.linalg.norm(x - max_perf, axis=1)
-    return np.minimum(1, np.exp(-decay_rate * distance))
 
 def performance_from_column(data, column):
     """
     In real data performance is already computed, we need to extract it by name of column.
     """
     return data[column].tolist()
-
-
-
-AVAILABLE_PERF_MODELS = {
-    'quadratic_1d': quadratic_1d
-}
 
 
 class Setup:
@@ -213,6 +198,62 @@ class WmtInputGenerator(MultivariateDataGenerator):
         full_data = pd.read_csv(path_to_data)
         data_orig = full_data[full_data["theme"] == original_theme]
         data_targ = full_data[full_data["theme"] == target_theme]
+
+        data_a = self.vectorizer.vectorize_texts(data_orig[source].tolist())
+        data_b = self.vectorizer.vectorize_texts(data_targ[source].tolist())
+
+        column_for_performance = self.config['model_performance']
+        performance_a = performance_from_column(data_orig, column_for_performance)
+        performance_b = performance_from_column(data_targ, column_for_performance)
+
+        # EMD and MSE
+        emd = compute_geom_loss(data_a, data_b)
+        # emd = wasserstein_distance_nd(data_a, data_b)
+        mse = mean_squared_error([np.mean(performance_a)], [np.mean(performance_b)])
+
+        setup = Setup(data_a, data_b, performance_a, performance_b, emd, mse)
+
+        if output_dir:
+            self.plot_distributions(data_a, data_b, performance_from_column, setup, output_dir)
+
+        return setup
+    
+class ParserInputGenerator(MultivariateDataGenerator):
+    def get_data(self, original_theme, target_theme, path_to_data, source, output_dir=None):
+        """
+        Get the original and target distributions along with model performance from certain collection.
+        """
+        full_data = pd.read_csv(path_to_data, sep="\t")
+        data_orig = full_data[full_data["treebank"] == original_theme]
+        data_targ = full_data[full_data["treebank"] == target_theme]
+
+        data_a = self.vectorizer.vectorize_texts(data_orig[source].tolist())
+        data_b = self.vectorizer.vectorize_texts(data_targ[source].tolist())
+
+        column_for_performance = self.config['model_performance']
+        performance_a = performance_from_column(data_orig, column_for_performance)
+        performance_b = performance_from_column(data_targ, column_for_performance)
+
+        # EMD and MSE
+        emd = compute_geom_loss(data_a, data_b)
+        # emd = wasserstein_distance_nd(data_a, data_b)
+        mse = mean_squared_error([np.mean(performance_a)], [np.mean(performance_b)])
+
+        setup = Setup(data_a, data_b, performance_a, performance_b, emd, mse)
+
+        if output_dir:
+            self.plot_distributions(data_a, data_b, performance_from_column, setup, output_dir)
+
+        return setup
+    
+class QaInputGenerator(MultivariateDataGenerator):
+    def get_data(self, original_theme, target_theme, path_to_data, source, output_dir=None):
+        """
+        Get the original and target distributions along with model performance from certain collection.
+        """
+        full_data = pd.read_pickle(path_to_data)
+        data_orig = full_data[full_data["Answer Type"] == original_theme]
+        data_targ = full_data[full_data["Answer Type"] == target_theme]
 
         data_a = self.vectorizer.vectorize_texts(data_orig[source].tolist())
         data_b = self.vectorizer.vectorize_texts(data_targ[source].tolist())
