@@ -11,8 +11,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from hep_ml import reweight
-from ..propensity_reweighting.src.reweight import PropensityReweighter
-from ..propensity_reweighting.src.preprocessing import ProScoreVectorizer
+from propensity_reweighting.src.reweight import PropensityReweighter
+from propensity_reweighting.src.preprocessing import ProScoreVectorizer
 
 
 class Reweigher(ABC):
@@ -20,7 +20,8 @@ class Reweigher(ABC):
         """
         """
         ## TODO: redefine without hot value
-        self.vectorizer = ProScoreVectorizer("google-bert/bert-base-uncased")
+        config={"model": "FacebookAI/xlm-roberta-base", 'tokenizer': "FacebookAI/xlm-roberta-base"}
+        self.vectorizer = ProScoreVectorizer(config)
 
     @abstractmethod
     def learn_weights(self, data_a, data_b):

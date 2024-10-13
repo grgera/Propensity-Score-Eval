@@ -9,13 +9,10 @@ from omegaconf import OmegaConf
 from scipy import stats
 from scipy.stats import wasserstein_distance, wasserstein_distance_nd
 from sklearn.metrics import mean_squared_error
-from geomloss import SamplesLoss
 
-from data_generator import DataGenerator, GaussianInputGenerator, ExponentialInputGenerator, StudentTInputGenerator, \
-    WeibullInputGenerator, AVAILABLE_PERF_MODELS, MultivariateGaussianInputGenerator, MultivariateBetaInputGenerator, \
-    MultivariateStudentTInputGenerator
-from reweighers import AVAILABLE_REWEIGHERS
-from utils import set_seeds, setup_logging, compute_geom_loss
+from .data_generator import WmtInputGenerator
+from .reweighers import AVAILABLE_REWEIGHERS
+from .utils import set_seeds, setup_logging, compute_geom_loss
 from tqdm import tqdm
 
 
@@ -140,17 +137,17 @@ def experiment_pipeline(config, logger):
         # N dimensional input distributions
         if input_data_distribution == 'wmt':
             data_generator = WmtInputGenerator(dataset_config)
-        elif input_data_distribution == 'qa':
-            data_generator = QaInputGenerator(dataset_config)
-        elif input_data_distribution == 'parser':
-            data_generator = ParserInputGenerator(dataset_config)
+        # elif input_data_distribution == 'qa':
+        #     data_generator = QaInputGenerator(dataset_config)
+        # elif input_data_distribution == 'parser':
+        #     data_generator = ParserInputGenerator(dataset_config)
         else:
             raise Exception(f"Input data distribution not supported: {input_data_distribution}")
         
         setups = []
         themes = dataset_config["shifts"]
         source = dataset_config["text_from"]
-        for orig_theme in tqdm(range(themes), desc="Generating each setup"):
+        for orig_theme in tqdm(themes, desc="Generating each setup"):
             # Generate synthetic data
             for tar_theme in themes:
                 if tar_theme != orig_theme:
@@ -207,11 +204,11 @@ if __name__ == "__main__":
     if not config_file.endswith(".yaml"):
         config_file += ".yaml"
 
-    config_folder = "configs"
-    config_path = os.path.join(config_folder, config_file)
+    # config_folder = "configs"
+    # config_path = os.path.join(config_folder, config_file)
 
     # Load configuration with OmegaConf
-    config = OmegaConf.load(config_path)
+    config = OmegaConf.load(config_file)
 
     # Add a timestamp to the output_dir
     timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -224,10 +221,6 @@ if __name__ == "__main__":
     seed = config['experiment'].get("seed", 1234)
     set_seeds(seed)
     logger.info(f"All seeds set to: {seed}")
-
-    # ----not used----
-    # reweighers = [AVAILABLE_REWEIGHERS[r_name] for r_name in config['experiment']['reweighers']]
-    # performance_models = [AVAILABLE_PERF_MODELS[m_name] for m_name in config['experiment']['performance_models']]
 
     result_df = experiment_pipeline(config=config, logger=logger)
 

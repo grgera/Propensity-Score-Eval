@@ -5,7 +5,7 @@ class ProScoreVectorizer():
     def __init__(self, config):
         """
         """
-        self.config = config["ProScoreVectorizer"]
+        self.config = config
         
         self.model = AutoModelForMaskedLM.from_pretrained(self.config["model"]) 
         self.tokenizer = AutoTokenizer.from_pretrained(self.config["tokenizer"])
@@ -23,7 +23,7 @@ class ProScoreVectorizer():
                                                return_token_type_ids=False, 
                                                return_tensors = 'pt')
 
-            _cls = self.model.bert(tokenized_sent['input_ids']).last_hidden_state[:,0,:]
+            _cls = self.model.roberta(tokenized_sent['input_ids']).last_hidden_state[:,0,:]
             cls_matrix[j, :] = _cls.detach().numpy()[0]
             
         return cls_matrix

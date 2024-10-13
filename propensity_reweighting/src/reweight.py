@@ -15,7 +15,7 @@ class PropensityReweighter:
     def __init__(self, config):
         """
         """
-        self.preprocess = ProScoreVectorizer(config)
+        self.preprocess = ProScoreVectorizer(config["ProScoreVectorizer"])
         self.config = config["PropensityReweighter"]
         self.logging = self.config["logging"]
         

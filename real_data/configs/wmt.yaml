@@ -1,10 +1,11 @@
 experiment:
   seed: 1234
   reweighers:
-    - importance
+ #   - importance
     - classifier
-    - kde
-    - modifiedhep-reweighter
+ #   - kde
+    - folding-reweighter
+ #   - modifiedhep-reweighter
   reweighers_configs:
       modifiedhep-reweighter:
         PropensityReweighter:
@@ -16,20 +17,22 @@ experiment:
           min_samples_leaf: 1
           n_folds: 3
         ProScoreVectorizer:
-          model: "google-bert/bert-base-uncased"
-          tokenizer: "google-bert/bert-base-uncased"
+          model: "FacebookAI/xlm-roberta-base"
+          tokenizer: "FacebookAI/xlm-roberta-base"
   performance_models:
     - model1_score
 
 dataset:
-  path_to_data: ../../wmt23/en-de_avec_themes.csv
-  input_data_distribution: WMT
+  path_to_data: ./wmt23/en-de_avec_themes.csv
+  input_data_distribution: wmt
   shifts:
     - speech
-    - mastdodon
+    - mastodon
     - news
     - userreview
   text_from: model1
-  vectorizer: "google-bert/bert-base-uncased"
+  vectorizer: 
+    model: "FacebookAI/xlm-roberta-base"
+    tokenizer: "FacebookAI/xlm-roberta-base"
   model_performance: "" # to be filled recursively by the ones listed in experiment.performance_models
   max_setup_plots: 1
