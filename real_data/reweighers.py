@@ -20,7 +20,7 @@ class Reweigher(ABC):
         """
         """
         ## TODO: redefine without hot value
-        config={"model": "FacebookAI/xlm-roberta-base", 'tokenizer': "FacebookAI/xlm-roberta-base"}
+        config={"model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2", 'tokenizer': "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"}
         self.vectorizer = ProScoreVectorizer(config)
 
     @abstractmethod
